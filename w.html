@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <!-- 引入HLS.js库 -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+         html{
+            font-size: 16px;
+         }
+
+         #video {
+            height: 90vh;
+            margin: auto;
+        }
+
+    </style>
+</head>
+<body>
+    <video id="video" controls></video>
+    <script>
+        if (Hls.isSupported()) {
+            var video = document.getElementById('video');
+            var hls = new Hls({
+                maxBufferLength: 20, // 设置最大的缓冲区长度为  秒
+                maxBufferSize: 20 * 1024 * 1024, // 设置缓冲区最大大小为 20 MB
+                // backBufferLength: 60 // 设置回放缓冲区长度为 60 秒
+                maxBufferHole: 0.5
+            });
+            hls.loadSource('http://13.215.175.122:7004/touqing/output.m3u8');
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                video.play();
+            });
+        }
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = 'http://13.215.175.122:7004/touqing/output.m3u8';
+            video.addEventListener('loadedmetadata', function () {
+                video.play();
+            });
+        }
+    </script>
+</body>
+</html>
