@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Player</title>
     <!-- 引入HLS.js库 -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<!--     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
          html{
             font-size: 16px;
@@ -16,10 +16,17 @@
             margin: auto;
         }
 
-    </style>
+    </style> -->
 </head>
 <body>
-    <video id="video" controls></video>
+    <script>
+        export default {
+  async fetch(request, env, ctx) {
+    return new Response('Hello World!');
+  },
+};
+    </script>
+<!--     <video id="video" controls></video>
     <script>
         if (Hls.isSupported()) {
             var video = document.getElementById('video');
@@ -41,6 +48,6 @@
                 video.play();
             });
         }
-    </script>
+    </script> -->
 </body>
 </html>
