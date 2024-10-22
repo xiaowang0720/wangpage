@@ -1,54 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Player</title>
-    <!-- 引入HLS.js库 -->
-<!--     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <style>
-         html{
-            font-size: 16px;
-         }
-
-         #video {
-            height: 90vh;
-            margin: auto;
-        }
-
-    </style> -->
-</head>
-<body>
-    YES
-    <script>
-        export default {
-  async fetch(request, env, ctx) {
-    return new Response('Hello World!');
-  },
-};
-    </script>
-<!--     <video id="video" controls></video>
-    <script>
-        if (Hls.isSupported()) {
-            var video = document.getElementById('video');
-            var hls = new Hls({
-                maxBufferLength: 20, // 设置最大的缓冲区长度为  秒
-                maxBufferSize: 20 * 1024 * 1024, // 设置缓冲区最大大小为 20 MB
-                // backBufferLength: 60 // 设置回放缓冲区长度为 60 秒
-                maxBufferHole: 0.5
-            });
-            hls.loadSource('./touqing/output.m3u8');
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, function () {
-                video.play();
-            });
-        }
-        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = './touqing/output.m3u8';
-            video.addEventListener('loadedmetadata', function () {
-                video.play();
-            });
-        }
-    </script> -->
-</body>
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>首页</title>  
+    <style>  
+        body {  
+            font-family: Arial, sans-serif; /* 设置字体 */  
+            line-height: 1.6; /* 设置行高 */  
+            background-color: #f4f4f4; /* 设置背景颜色 */  
+            color: #333; /* 设置文字颜色 */  
+            margin: 0;  
+            padding: 20px;  
+        }  
+        div {  
+            max-width: 80%; /* 设置最大宽度，使内容更易读 */  
+            margin: 0 auto; /* 居中 */  
+            background-color: #fff; /* 设置背景颜色为白色 */  
+            padding: 20px; /* 设置内边距 */  
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */  
+            border-radius: 8px; /* 设置圆角 */  
+        }  
+        p {  
+            margin-bottom: 15px; /* 设置段落间距 */  
+        }  
+    </style>  
+</head>  
+<body>  
+    <div>  
+        <p>  
+            我想了又想，可能我影响到了你的情绪，我的状态也不是很好。所以有些话我还是想说一下，但我并没有别的意思，只是我觉得说出来可能都会轻松一点。  
+        </p>  
+        <p>  
+            可能是在错误的时间我对你产生了感情，所以可能会导致我越接近你，你越觉得烦，然后我会想很多很多奇怪的东西，逐渐思行不一。到你逐渐好转后我已怕了，怕自己说错话做错事。可能是我的错觉有时我觉得只要他在，你就会有些刻意躲避，至少在之前是这样的。所以我觉得可能是不能太急，想的是先慢慢来，怕做的事情让你不开心让你觉得烦，觉得可能是你有所顾虑，并且我看你每天学这么累。  
+        </p>  
+        <p>  
+            有时我想先冷静一下，但我又总感觉到很迷茫，真的很内耗。我现在明白事情不是我想的那样。我觉得应该就是有啥问题就直接说的。你说我太直男，我也这么认为，觉得不懂怎么让你开心，不懂关心体贴照顾人，不懂romantic(今天刚学的单词hhh)，确实是我自己的问题，如你所说我的确是个钢铁大直男，但是我又觉得我本不应该是这样没有情调的。  
+        </p>  
+        <p>  
+            其实我那天不应该和你说那些话的，那样的话我还能继续和你聊天，一起玩，不过现在也可以，我完全没问题。但是我又觉得该说，因为让我明白了自己的问题所在，还有那些愚蠢的想法，不然可能你会越来越讨厌我。  
+        </p>  
+        <p>  
+            所以，归根结底这全都是我自己的问题，是我没有好好珍惜这段时间。可能你觉得我说的全是废话，没有任何意义，但我真希望你不要因为这些事对你和你的学习有任何影响。  
+        </p>  
+        <p>  
+            说这些并没有别的意思，也没有渴望什么，只是觉得说出来心里会轻松一点，然后能好好学习。还有，最最最重要的是，无论之后如何，真的希望不要因为这些事影响了你的心情和学习还有一些关系，我们还是我们，再说我们还是老乡呢！但我说过的话也不会骗你。  
+        </p>  
+    </div>  
+</body>  
 </html>
