@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英语复试面试练习</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #10b981;
+            --secondary-hover: #059669;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-light: #4b5563;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f5f3ff;
+            transform: translateY(-2px);
+        }
+
+        .btn-answer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+
+        .btn-answer:hover {
+            background-color: var(--secondary-hover);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
+
+        .answer-text {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border-color);
+            font-size: 16px;
+            color: var(--text-light);
+            white-space: pre-wrap;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* 列表模式样式 */
+        .list-item {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .list-item-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎓 研究生复试英文面试练习</h1>
+        
+        <div class="controls">
+            <button class="btn-primary" onclick="generateRandom()">🎲 随机出题</button>
+            <button class="btn-secondary" onclick="showAll()">📋 查看全部</button>
+        </div>
+
+        <!-- 随机出题展示区 -->
+        <div id="random-mode" class="hidden">
+            <div class="card">
+                <div class="question-text" id="random-q-text"></div>
+                <button class="btn-answer" id="show-ans-btn" onclick="showAnswer()">👁️ 查看答案</button>
+                <div class="answer-text hidden" id="random-a-text"></div>
+            </div>
+        </div>
+
+        <!-- 全部题目展示区 -->
+        <div id="all-mode" class="hidden">
+            <!-- 内容由 JS 动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 数据源：严格按照您提供的13个题目整理，分为 Q(问题) 和 A(答案)
+        const qaData =[
+            {
+                q: "报考动机，为什么选择考研，为什么报考我们学校。\nWhat is your reason for attending graduate school?\nWhy do you choose our university/major?\nHow much do you know about this profession/major?\n你读研究生的原因是什么？\n你为什么选择我们大学/专业？\n你对这个职业/专业了解多少？",
+                a: "答：Thanks for your question \nIn my opinion, I like computer technology major（of your university）very much. I want to (further) improve my professional level, deepen my understanding of the major and contact with more excellent teachers and classmates. And I want to learn more knowledge and method to face future challenges.\nThe above is my answer.\n\n答：谢谢您的问题\n在我看来，我非常喜欢（贵校的）计算机技术专业。我希望进一步提升自己的专业水平，加深对该专业的理解，并与更多优秀的老师和同学交流。因此，我想学习更多的知识和方法，以应对未来的挑战。"
+            },
+            {
+                q: "研究生三年规划。\nWhat is your plan for your graduate study?\nWhat do you plan to do as graduate student?\n(If you were admitted,how would you spend your graduate life?)\n（How do you plan your graduate life?)",
+                a: "答：Thanks for your question \nDuring my graduate study, I will study hard and finish all my courses first. I will read more papers to learn new knowledge，and deepen my understanding of the major. I will to learn more knowledge and method to face future challenges. I will try my best to complete my graduate study successfully. The above is my plan.\n\n在研究生学习期间，我将努力学习，首先完成所有课程。我会阅读更多论文以学习新知识。我将竭尽全力，顺利完成我的研究生学业。以上就是我的计划。"
+            },
+            {
+                q: "希望研究的方向和原因。\nWhat direction do you want to study? Why?\nWhat research direction would you choose?Why?",
+                a: "答：Thanks for your question \nI hope the research direction is computer technology.The reason are as follows,I am very interested in the direction. I have learned a lot of knowledge about my major. I think this direction is widely in the society.\nThe above is my answer.\n\n我希望研究方向是计算机技术。原因如下：我对这个方向非常感兴趣。我已经学习了很多知识在这个专业上。我认为这个方向在社会上应用广泛。"
+            },
+            {
+                q: "研究生能带来什么收获。\nWhat do you think graduate education can bring you？",
+                a: "答：Thanks for your question \nI believe that through the graduate study,I can learn new knowledge that i cannot learn in the undergraduate stage. It can improve my professional ability . I can meet more good teachers and friends.And i will have more opportunities and choices."
+            },
+            {
+                q: "介绍一下你的本科院校。\nCan you introduce your undergraduate institution?",
+                a: "Thanks for your question. \nI come from Zhengzhou Business University, located in Zhengzhou City, Henan Province. The school has rich academic resources and a beautiful campus. The teachers are friendly and the study environment is very good, so I can learn a lot and improve myself. I love my school very much.\n\n感谢提问。我来自郑州商学院，该校位于河南省郑州市。学校拥有丰富的学术资源和美丽的校园环境。老师们都很友好，学习氛围也非常好，因此我能学到很多知识和提升自己。我非常热爱我的学校。"
+            },
+            {
+                q: "介绍一下你的家庭。\nCan you introduce your family(members)?",
+                a: "Thank you for asking. \nThere are six people in my family, my parents, two sisters, one brother, and me. I am the youngest child in my family, so, they all love me very much. My parents have set a good example for me in both life and study, especially my mother, who has influenced me the most. She always encourages me not to give up. In short, I love my family very much.\n\n感谢提问，我家有6口人，我的父母，两个姐姐一个哥哥和我。我的家庭很和睦。父母在生活和学习上为我树立了很好的榜样，尤其是我的妈妈对我影响最大。她总是鼓励我不要放弃。总之，我很爱我的家庭。"
+            },
+            {
+                q: "介绍一下你的家乡。\nWhere are you from?\nCould you give me a general introduction of your hometown?",
+                a: "Thank you for asking. \nMy hometown is located in shangqiu city henan province, which is a beautiful city. There are several famous scenic spots, such as 商丘Ancient city. It is a very beautiful ancient citiy in China.\n我的家乡位于河南省商丘市，那是一个美丽的城市。这里有几个著名的景点，比如商丘古城。它是中国保存最完好的四大古城之一。\n\nThe delicacies of Shangqiu, such as Shuijianbao (water-fried buns) and Shaobing, there are very delicacies. This is my hometown, Shangqiu City.\n商丘的特色美食，像水煎包、烧饼，它们非常美味。"
+            },
+            {
+                q: "如果失败了你会怎么做。\nWhat will you do if you failed this time?",
+                a: "If I fail, I will not give up. I will accept the result calmly and find my shortcomings. I will sum up experience, study harder and try again in the future. I always believe hard work will pay off.\n\n如果我失败了，我不会放弃。我会平静接受结果，找到自己的不足。总结经验，更加努力学习，以后再尝试。我相信努力一定会有回报。"
+            },
+            {
+                q: "面对压力时，你会怎么处理。\nHow do you handle stress ?",
+                a: "When I face the pressure, I will go out for a walk to relax myself and reduce stress. Then I will think about how to solve the problem. Sometimes I will ask my classmates for help. I will not give up easily. I believe I have the ability to solve the problem.\n\n当我压力很大时，我会出去散步放松自己，缓解压力。然后我会想办法解决问题。有时候我会向同学求助，渡过难关。我不会轻易放弃。我相信自己有能力解决问题。"
+            },
+            {
+                q: "你的父母支持你考研吗。\nDo your parents support you in taking the postgraduate entrance examination?",
+                a: "My parents fully support my postgraduate study. They know learning is very important. They believe further study is necessary. Especially my mother. She supported me fully and encouraged me all the time during my preparation.\n\n我的父母非常支持我读研，因为他们知道学习的重要性，他们相信进一步的研究学习是有必要的。尤其是我的妈妈，在备考的一年中，她全力支持我，不断鼓励我。"
+            },
+            {
+                q: "家里对你影响最大的人是谁。\nWho is the most influential person in your family？",
+                a: "The most influential person in my family is my mother, who has high requirements for my study and is especially concerned about my study.\n\n家里对我影响最大的人是我的妈妈，我的妈妈对我的学习要求很高，特别关心我的学习。"
+            },
+            {
+                q: "你最喜欢的运动是什么。\nWhat is your favorite sport?",
+                a: "My favorite sport is running. I think running is good for my health. It can make me strong and relaxed. When I feel tired from study, I like to run to keep a clear mind. So I like running very much.\n\n我最喜欢的运动是跑步。我认为跑步对我的健康有益。它能使我的身体强健，心情放松。当学习让我感到疲倦时，我喜欢跑步来保持头脑清醒。所以我非常喜欢跑步。"
+            },
+            {
+                q: "介绍一下优缺点。\nWhat are your strengths and weaknesses?",
+                a: "I think my biggest strengths are hard-working and careful. I am willing to face difficulties and finish my work carefully. Beside, I have good computer skills. My weakness is that I am a little shy and not confident enough. But I am trying to change and improve myself.\n\n我认为我最大的优点是勤奋和细心。我愿意面对困难，并认真完成工作。另外，我有较好的计算机能力。我的缺点是有点害羞，不够自信。但我正在努力改变自己，提升自己。"
+            }
+        ];
+
+        let currentRandomIndex = -1;
+
+        // 初始化页面：自动生成全部列表，但先隐藏
+        window.onload = function() {
+            renderAllQuestions();
+        }
+
+        // 随机出题逻辑
+        function generateRandom() {
+            // 切换视图
+            document.getElementById('all-mode').classList.add('hidden');
+            document.getElementById('random-mode').classList.remove('hidden');
+            
+            // 隐藏答案和按钮状态重置
+            document.getElementById('random-a-text').classList.add('hidden');
+            document.getElementById('show-ans-btn').classList.remove('hidden');
+
+            // 生成随机数 (0 到 12)
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * qaData.length);
+            } while (newIndex === currentRandomIndex && qaData.length > 1); // 避免连续出同一道题
+            
+            currentRandomIndex = newIndex;
+
+            // 渲染题目 (不带序号)
+            document.getElementById('random-q-text').textContent = qaData[currentRandomIndex].q;
+            // 提前将答案放入DOM，但不显示
+            document.getElementById('random-a-text').textContent = qaData[currentRandomIndex].a;
+        }
+
+        // 显示答案逻辑
+        function showAnswer() {
+            document.getElementById('random-a-text').classList.remove('hidden');
+            document.getElementById('show-ans-btn').classList.add('hidden');
+        }
+
+        // 渲染并展示全部题目逻辑
+        function showAll() {
+            document.getElementById('random-mode').classList.add('hidden');
+            document.getElementById('all-mode').classList.remove('hidden');
+        }
+
+        // 生成全部列表的 DOM 结构
+        function renderAllQuestions() {
+            const allModeContainer = document.getElementById('all-mode');
+            let htmlContent = '';
+
+            qaData.forEach((item, index) => {
+                htmlContent += `
+                    <div class="list-item">
+                        <div class="list-item-title">${index + 1}.</div>
+                        <div class="question-text">${item.q}</div>
+                        <div class="answer-text">${item.a}</div>
+                    </div>
+                `;
+            });
+
+            allModeContainer.innerHTML = htmlContent;
+        }
+    </script>
+</body>
+</html>
