@@ -3,17 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英语复试面试练习</title>
+    <title>研究生复试英文面试练习系统</title>
     <style>
         :root {
             --primary-color: #4f46e5;
             --primary-hover: #4338ca;
             --secondary-color: #10b981;
             --secondary-hover: #059669;
+            --nav-color: #6366f1;
+            --nav-hover: #4f46e5;
             --bg-color: #f3f4f6;
             --card-bg: #ffffff;
             --text-main: #1f2937;
             --text-light: #4b5563;
+            --text-muted: #9ca3af;
             --border-color: #e5e7eb;
         }
 
@@ -64,12 +67,19 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none !important;
+        }
+
         .btn-primary {
             background-color: var(--primary-color);
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background-color: var(--primary-hover);
             transform: translateY(-2px);
         }
@@ -80,7 +90,7 @@
             border: 1px solid var(--primary-color);
         }
 
-        .btn-secondary:hover {
+        .btn-secondary:hover:not(:disabled) {
             background-color: #f5f3ff;
             transform: translateY(-2px);
         }
@@ -88,13 +98,23 @@
         .btn-answer {
             background-color: var(--secondary-color);
             color: white;
-            padding: 8px 16px;
-            font-size: 14px;
-            margin-top: 15px;
+            padding: 10px 20px;
         }
 
-        .btn-answer:hover {
+        .btn-answer:hover:not(:disabled) {
             background-color: var(--secondary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-nav {
+            background-color: var(--nav-color);
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background-color: var(--nav-hover);
+            transform: translateY(-2px);
         }
 
         .card {
@@ -104,19 +124,44 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
             animation: fadeIn 0.5s ease;
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background-color: #f3f4f6;
+            padding: 4px 12px;
+            border-radius: 20px;
         }
 
         .question-text {
             font-size: 18px;
             font-weight: 600;
             color: var(--text-main);
-            margin-bottom: 15px;
+            margin-bottom: 25px;
             white-space: pre-wrap;
         }
 
-        .answer-text {
+        .practice-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-top: 20px;
-            padding-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .answer-text {
+            margin-top: 25px;
+            padding-top: 25px;
             border-top: 1px dashed var(--border-color);
             font-size: 16px;
             color: var(--text-light);
@@ -125,7 +170,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         /* 列表模式样式 */
@@ -157,16 +202,27 @@
         <h1>🎓 英语复试面试练习题目</h1>
         
         <div class="controls">
-            <button class="btn-primary" onclick="generateRandom()">🎲 随机出题</button>
+            <button class="btn-primary" onclick="startPractice()">🚀 开始练习</button>
             <button class="btn-secondary" onclick="showAll()">📋 查看全部</button>
         </div>
 
-        <!-- 随机出题展示区 -->
-        <div id="random-mode" class="hidden">
+        <!-- 练习模式展示区 -->
+        <div id="practice-mode" class="hidden">
             <div class="card">
-                <div class="question-text" id="random-q-text"></div>
-                <button class="btn-answer" id="show-ans-btn" onclick="showAnswer()">👀 查看答案</button>
-                <div class="answer-text hidden" id="random-a-text"></div>
+               <div class="practice-controls">
+                    <button class="btn-nav" id="btn-prev" onclick="prevQuestion()">⬅️ 上一题</button>
+                    <button class="btn-answer" id="show-ans-btn" onclick="showAnswer()">👀 查看答案</button>
+                    <button class="btn-nav" id="btn-next" onclick="nextQuestion()">下一题 ➡️</button>
+                </div>
+	</br>
+                <div class="card-header">
+                    <span class="progress-text" id="progress-text">1/17</span>
+                </div>
+                <div class="question-text" id="practice-q-text"></div>
+                
+ 
+
+                <div class="answer-text hidden" id="practice-a-text"></div>
             </div>
         </div>
 
@@ -177,7 +233,7 @@
     </div>
 
     <script>
-        // 数据源：严格按照您提供的13个题目整理，分为 Q(问题) 和 A(答案)
+        // 数据源：包含全部 17 个题目
         const qaData =[
             {
                 q: "报考动机，为什么选择考研，为什么报考我们学校。\nWhat is your reason for attending graduate school?\nWhy do you choose our university/major?\nHow much do you know about this profession/major?\n你读研究生的原因是什么？\n你为什么选择我们大学/专业？\n你对这个职业/专业了解多少？",
@@ -230,49 +286,109 @@
             {
                 q: "介绍一下优缺点。\nWhat are your strengths and weaknesses?",
                 a: "I think my biggest strengths are hard-working and careful. I am willing to face difficulties and finish my work carefully. Beside, I have good computer skills. My weakness is that I am a little shy and not confident enough. But I am trying to change and improve myself.\n\n我认为我最大的优点是勤奋和细心。我愿意面对困难，并认真完成工作。另外，我有较好的计算机能力。我的缺点是有点害羞，不够自信。但我正在努力改变自己，提升自己。"
+            },
+            {
+                q: "你最喜欢的书籍是什么？\nWhat is your favorite book?",
+                a: "My favorite book is Introduction to Algorithms. It is a famous book about algorithms and data structures. I learned many basic and important algorithms from it, such as sorting, searching algorithms. This book helps me improve my programming and competition skills. I think it is very useful for my computer study and future research.\n\n我最喜欢的书是《算法导论》。它是一本关于算法和数据结构的经典书籍。我从中学到了很多基础且重要的算法，比如排序、查找算法。这本书帮助我提升了编程和竞赛能力。我认为它对我的计算机学习和未来科研非常有用。"
+            },
+            {
+                q: "你最喜欢的课程是什么？\nWhat is your favorite course?",
+                a: "My favorite course is Introduction to Algorithms. This course helps me in competitions and projects. I learned many basic and important algorithms from it, such as sorting, searching algorithms. It helps me improve my programming and competition skills. I think it is very useful for my computer study and future research.\n\n我最喜欢的课程是算法导论。这门课对我的竞赛和项目都很有帮助。我从中学到了很多基础且重要的算法，比如排序、查找算法。它帮助我提升了编程和竞赛能力。我认为它对我的计算机学习和未来科研非常有用。"
+            },
+            {
+                q: "你最喜欢的电影是什么？\nWhat is your favorite movie?",
+                a: "My favorite movie is The Social Network. It tells the story of Facebook and its founder. I like this movie because it is about technology. It tell me that interest and hard work are very important. It also encourages me to study computer science better. This movie is very meaningful to me.\n\n我最喜欢的电影是《社交网络》。它讲述了脸书及其创始人的故事。我喜欢这部电影，因为它和科技有关。它告诉我兴趣和努力非常重要。它也鼓励我更好地学习计算机专业。这部电影对我很有意义。"
+            },
+            {
+                q: "介绍一下你的性格特点？\nCan you describe your personality?",
+                a: "My personality is hard-working and careful. I like to face difficulties and finish work carefully. I am also a good team player and easy to get along with. Sometimes I am a little shy, but I am trying to be more confident and active.\n\n我的性格是勤奋、细心，喜欢面对困难并认真完成工作。我也善于团队合作，很好相处。有时我会有点害羞，但我正在努力变得更自信、更积极。"
             }
         ];
 
-        let currentRandomIndex = -1;
+        // 状态变量
+        let shuffledIndices =[];
+        let currentIndex = 0;
 
-        // 初始化页面：自动生成全部列表，但先隐藏
+        // 初始化页面
         window.onload = function() {
             renderAllQuestions();
         }
 
-        // 随机出题逻辑
-        function generateRandom() {
-            // 切换视图
-            document.getElementById('all-mode').classList.add('hidden');
-            document.getElementById('random-mode').classList.remove('hidden');
-            
-            // 隐藏答案和按钮状态重置
-            document.getElementById('random-a-text').classList.add('hidden');
-            document.getElementById('show-ans-btn').classList.remove('hidden');
-
-            // 生成随机数 (0 到 12)
-            let newIndex;
-            do {
-                newIndex = Math.floor(Math.random() * qaData.length);
-            } while (newIndex === currentRandomIndex && qaData.length > 1); // 避免连续出同一道题
-            
-            currentRandomIndex = newIndex;
-
-            // 渲染题目 (不带序号)
-            document.getElementById('random-q-text').textContent = qaData[currentRandomIndex].q;
-            // 提前将答案放入DOM，但不显示
-            document.getElementById('random-a-text').textContent = qaData[currentRandomIndex].a;
+        // 打乱数组 (Fisher-Yates 算法)
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
+            }
+            return array;
         }
 
-        // 显示答案逻辑
+        // 点击“开始练习”
+        function startPractice() {
+            // 生成 0 到 qaData.length-1 的索引数组，并打乱顺序
+            let indices = Array.from({length: qaData.length}, (_, i) => i);
+            shuffledIndices = shuffleArray(indices);
+            currentIndex = 0;
+
+            // 切换视图
+            document.getElementById('all-mode').classList.add('hidden');
+            document.getElementById('practice-mode').classList.remove('hidden');
+            
+            // 渲染第一道题
+            renderCurrentQuestion();
+        }
+
+        // 渲染当前处于练习中的题目
+        function renderCurrentQuestion() {
+            // 获取随机序列中对应的真实题目序号
+            const actualIndex = shuffledIndices[currentIndex];
+            const currentQA = qaData[actualIndex];
+
+            // 更新进度文字 (如 5/17)
+            document.getElementById('progress-text').textContent = `${currentIndex + 1} / ${qaData.length}`;
+            
+            // 更新题目和答案内容
+            document.getElementById('practice-q-text').textContent = currentQA.q;
+            document.getElementById('practice-a-text').textContent = currentQA.a;
+
+            // 隐藏答案，显示“查看答案”按钮
+            document.getElementById('practice-a-text').classList.add('hidden');
+            document.getElementById('show-ans-btn').classList.remove('hidden');
+
+            // 按钮状态：第一题禁用“上一题”，最后一题禁用“下一题”
+            document.getElementById('btn-prev').disabled = (currentIndex === 0);
+            document.getElementById('btn-next').disabled = (currentIndex === qaData.length - 1);
+        }
+
+        // 上一题
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderCurrentQuestion();
+            }
+        }
+
+        // 下一题
+        function nextQuestion() {
+            if (currentIndex < qaData.length - 1) {
+                currentIndex++;
+                renderCurrentQuestion();
+            }
+        }
+
+        // 查看答案
         function showAnswer() {
-            document.getElementById('random-a-text').classList.remove('hidden');
+            document.getElementById('practice-a-text').classList.remove('hidden');
             document.getElementById('show-ans-btn').classList.add('hidden');
         }
 
-        // 渲染并展示全部题目逻辑
+        // 查看全部
         function showAll() {
-            document.getElementById('random-mode').classList.add('hidden');
+            document.getElementById('practice-mode').classList.add('hidden');
             document.getElementById('all-mode').classList.remove('hidden');
         }
 
@@ -286,7 +402,7 @@
                     <div class="list-item">
                         <div class="list-item-title">${index + 1}.</div>
                         <div class="question-text">${item.q}</div>
-                        <div class="answer-text">${item.a}</div>
+                        <div class="answer-text" style="display:block; animation:none;">${item.a}</div>
                     </div>
                 `;
             });
