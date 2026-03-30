@@ -18,6 +18,7 @@
             --text-light: #4b5563;
             --text-muted: #9ca3af;
             --border-color: #e5e7eb;
+            --timer-bg: #e0e7ff;
         }
 
         * {
@@ -129,8 +130,11 @@
 
         .card-header {
             display: flex;
-            justify-content: flex-end;
-            margin-bottom: 15px;
+            justify-content: space-between; /* 左右两端对齐 */
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f3f4f6;
         }
 
         .progress-text {
@@ -140,6 +144,18 @@
             background-color: #f3f4f6;
             padding: 4px 12px;
             border-radius: 20px;
+        }
+
+        .timer-text {
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--primary-color);
+            background-color: var(--timer-bg);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .question-text {
@@ -209,19 +225,23 @@
         <!-- 练习模式展示区 -->
         <div id="practice-mode" class="hidden">
             <div class="card">
-               <div class="practice-controls">
+                <!-- 顶部：进度与计时器 -->
+                <div class="card-header">
+                    <span class="progress-text" id="progress-text">1/17</span>
+                    <span class="timer-text" id="timer-text">⏱ 00:00</span>
+                </div>
+                
+                <!-- 中间：题目 -->
+                <div class="question-text" id="practice-q-text"></div>
+                
+                <!-- 底部：操作按钮 -->
+                <div class="practice-controls">
                     <button class="btn-nav" id="btn-prev" onclick="prevQuestion()">⬅️ 上一题</button>
                     <button class="btn-answer" id="show-ans-btn" onclick="showAnswer()">👀 查看答案</button>
                     <button class="btn-nav" id="btn-next" onclick="nextQuestion()">下一题 ➡️</button>
                 </div>
-	</br>
-                <div class="card-header">
-                    <span class="progress-text" id="progress-text">1/17</span>
-                </div>
-                <div class="question-text" id="practice-q-text"></div>
-                
- 
 
+                <!-- 答案区 -->
                 <div class="answer-text hidden" id="practice-a-text"></div>
             </div>
         </div>
@@ -308,6 +328,8 @@
         // 状态变量
         let shuffledIndices =[];
         let currentIndex = 0;
+        let timerInterval = null; // 计时器对象
+        let secondsElapsed = 0;   // 已经过秒数
 
         // 初始化页面
         window.onload = function() {
@@ -325,6 +347,29 @@
                 array[randId] = tmp;
             }
             return array;
+        }
+
+        // 格式化时间为 mm:ss
+        function formatTime(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            const s = (totalSeconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        // 启动/重置计时器
+        function startTimer() {
+            // 清除旧计时器
+            if (timerInterval) clearInterval(timerInterval);
+            
+            // 重置状态
+            secondsElapsed = 0;
+            document.getElementById('timer-text').textContent = `⏱ 00:00`;
+            
+            // 启动新计时器，每秒更新
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                document.getElementById('timer-text').textContent = `⏱ ${formatTime(secondsElapsed)}`;
+            }, 1000);
         }
 
         // 点击“开始练习”
@@ -351,6 +396,9 @@
             // 更新进度文字 (如 5/17)
             document.getElementById('progress-text').textContent = `${currentIndex + 1} / ${qaData.length}`;
             
+            // 重置并启动该题的计时器
+            startTimer();
+
             // 更新题目和答案内容
             document.getElementById('practice-q-text').textContent = currentQA.q;
             document.getElementById('practice-a-text').textContent = currentQA.a;
@@ -380,7 +428,7 @@
             }
         }
 
-        // 查看答案
+        // 查看答案 (查看答案时计时器继续，可自行决定是否停止)
         function showAnswer() {
             document.getElementById('practice-a-text').classList.remove('hidden');
             document.getElementById('show-ans-btn').classList.add('hidden');
@@ -388,6 +436,9 @@
 
         // 查看全部
         function showAll() {
+            // 切换到查看全部模式时，停止计时
+            if (timerInterval) clearInterval(timerInterval);
+
             document.getElementById('practice-mode').classList.add('hidden');
             document.getElementById('all-mode').classList.remove('hidden');
         }
