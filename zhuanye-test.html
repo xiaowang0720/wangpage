@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算机专业课复试面试练习系统</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #10b981;
+            --secondary-hover: #059669;
+            --nav-color: #6366f1;
+            --nav-hover: #4f46e5;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-light: #4b5563;
+            --text-muted: #9ca3af;
+            --border-color: #e5e7eb;
+            --timer-bg: #e0e7ff;
+            --tag-bg: #fef3c7;
+            --tag-text: #d97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.8; /* 增加了行高，让多行文本看起来更舒适 */
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none !important;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #f5f3ff;
+            transform: translateY(-2px);
+        }
+
+        .btn-answer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .btn-answer:hover:not(:disabled) {
+            background-color: var(--secondary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-nav {
+            background-color: var(--nav-color);
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background-color: var(--nav-hover);
+            transform: translateY(-2px);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease;
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background-color: #f3f4f6;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .timer-text {
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--primary-color);
+            background-color: var(--timer-bg);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .subject-tag {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--tag-text);
+            background-color: var(--tag-bg);
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 25px;
+            white-space: pre-wrap; /* 保证 \n 能够正确换行 */
+        }
+
+        .practice-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .answer-text {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px dashed var(--border-color);
+            font-size: 16px;
+            color: var(--text-light);
+            white-space: pre-wrap; /* 保证 \n 能够正确换行 */
+            animation: fadeIn 0.4s ease;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* 列表模式样式 */
+        .list-item {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .list-item-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>💻 计算机专业课复试面试练习系统</h1>
+        
+        <div class="controls">
+            <button class="btn-primary" onclick="startPractice()">🚀 开始练习</button>
+            <button class="btn-secondary" onclick="showAll()">📋 查看全部</button>
+        </div>
+
+        <!-- 练习模式展示区 -->
+        <div id="practice-mode" class="hidden">
+            <div class="card">
+                <!-- 顶部：进度与计时器 -->
+                <div class="card-header">
+                    <span class="progress-text" id="progress-text">1/106</span>
+                    <span class="timer-text" id="timer-text">⏱ 00:00</span>
+                </div>
+                
+                <!-- 中间：题目 -->
+                <div class="subject-tag" id="practice-subject-tag"></div>
+                <div class="question-text" id="practice-q-text"></div>
+                
+                <!-- 底部：操作按钮 -->
+                <div class="practice-controls">
+                    <button class="btn-nav" id="btn-prev" onclick="prevQuestion()">⬅️ 上一题</button>
+                    <button class="btn-answer" id="show-ans-btn" onclick="showAnswer()">👀 查看答案</button>
+                    <button class="btn-nav" id="btn-next" onclick="nextQuestion()">下一题 ➡️</button>
+                </div>
+
+                <!-- 答案区 -->
+                <div class="answer-text hidden" id="practice-a-text"></div>
+            </div>
+        </div>
+
+        <!-- 全部题目展示区 -->
+        <div id="all-mode" class="hidden">
+            <!-- 内容由 JS 动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 数据源：包含全部 106 个题目，划分为 subject、q、a
+        // 已经对所有答案(a)的排版进行了 \n 换行细化处理
+        const qaData =[
+            // ================= 【数据结构】 =================
+            { subject: "数据结构", q: "1.什么是数据结构？数据结构的三要素是？（不需要死记，知道大概就可以）", a: "答：\n数据结构是相互之间存在的一种或多种特定关系的数据元素的集合。\n数据结构的三要素是：数据的逻辑结构、数据的存储结构(物理结构)、数据的运算。\n- 数据的逻辑结构包括：线性结构、非线性结构。线性结构包括线性表、栈、队列、数组、串；非线性结构包括集合、树、图。\n- 数据的存储结构包括：顺序存储、链式存储、散列存储、索引存储。" },
+            { subject: "数据结构", q: "2.请说明栈与队列的区别？", a: "答：\n首先，栈和队列都是受限的线性表。栈只能在表的一端进行插入和删除，队列只能在队列的一端进行插入另外一端进行删除。\n其次，栈是先进后出，队列是先进先出。" },
+            { subject: "数据结构", q: "3.解释下头指针和头结点的区别？为什么单链表增加头结点的目的是什么？有什么用？", a: "答：\n头指针：是指向第一个节点存储位置的指针，具有标识作用，头指针是链表的必要元素，无论链表是否为空，头指针都存在。\n头结点：是为了操作统一和方便设立的，放在第一个元素节点之前，头结点的数据域也可以不存储任何信息，因此头结点可有可无。\n增加头结点的作用：可以方便运算，例如在第一个元素结点前插入结点和删除结点操作与其它结点的操作统一了。" },
+            { subject: "数据结构", q: "4.循环链表的优点是什么？", a: "答：可以从任何一个结点访问整个链表。" },
+            { subject: "数据结构", q: "5.数组和链表的区别？(比较经典的题目)", a: "答：\n- 从逻辑结构来看：数组的存储长度是固定的，即数组大小定义之后不能改变，而且在插入和删除操作需要移动大量的元素。相反对于链表，它能够动态分配存储空间以适应数据动态增减的情况，并且易于进行插入和删除操作。\n- 从访问方式来看：数组中的元素在内存中连续存放，可以通过数组下标对数组进行随机访问，访问效率较高。链表是链式存储结构，他的存储空间不是必须连续的，可以是任意的，因此链表的访问必须从前往后依次进行，访问效率比较低。" },
+            { subject: "数据结构", q: "6.数据结构的复杂度 O(1)是什么意思？", a: "答：\n时间复杂度 O(n)，表示程序运行时间跟 n 有关，并且是线性关系。\n空间复杂度 O(1)，表示所需辅助空间为常量，并且与 n 无关。" },
+            { subject: "数据结构", q: "7.简述下数据结构中的各种树？(这里把一些常见的列举出来)", a: "答：\n- 二叉树：只有一个根节点，每个结点最多有 2 个子节点，且有左右子树区分。\n- 二叉排序树：左子树均小于根，右子树均大于根。\n- 平衡二叉树：左右子树高度差绝对值小于等于 1。\n- 满二叉树：一棵二叉树的结点要么是叶子结点，要么它有两个子结点（如果一个二叉树的层数为 K，且结点总数是(2^k)-1，则它就是满二叉树）。\n- 完全二叉树：若设二叉树的深度为 k，除第 k 层外，其它各层 (1～k-1) 的结点数都达到最大个数，第 k 层所有的结点都连续集中在最左边。\n- 最优二叉树(哈夫曼树)：树的带权路径长度达到最小，称这样的二叉树为最优二叉树。哈夫曼树是带权路径长度最短的树，权值较大的结点离根较近。" },
+            { subject: "数据结构", q: "8.简述下广度优先遍历和深度优先遍历？", a: "答：\n- 广度优先遍历：首先访问初始顶点 v；然后，依次访问顶点 v 的所有未被访问过的邻接点（也就是第一层的遍历）；然后再按照访问第一层节点的顺序，依次去遍历它们各自对应的、下一层未被访问过的邻接点；重复以上步骤，直到图中所有顶点都被访问过为止。\n- 深度优先遍历：首先访问初始顶点 v；若 v 的第一个邻接点没有被访问过，则以该邻接点为起点，递归地去进行深度遍历；若 v 的第一个邻接点已经被访问过，则寻找 v 的下一个未被访问的邻接点并进行深度遍历；当顶点 v 的所有邻接点都被访问过后，则回溯到 v 的上一级顶点，寻找其他未访问的分支。重复以上步骤，直到图中所有顶点都被访问过为止。" },
+            { subject: "数据结构", q: "9.简述下迪杰斯特拉（Dijkstra）算法、弗洛伊德（Floyd）算法？", a: "答：\n- 迪杰斯特拉（Dijkstra）算法：经典的单源最短路径算法，用于求某一顶点到其他顶点的最短路径。思想是贪心，每次在未确定最短距离的集合中选距离起点最近的点，用它去更新其邻节点的距离，并将该点加入已确定的集合中。\n- 弗洛伊德（Floyd）算法：经典的求任意顶点之间的最短路径。初始时设置一个 n 阶方阵用于存储各个顶点之间的路径，然后在原直接路径中加入中间顶点，如果加入中间顶点后路径变短，则修改之。直到所有顶点试探完毕，时间复杂度为 O(N^3)，空间复杂度为 O(N^2)。" },
+            { subject: "数据结构", q: "10.简述下求最小生成树的 2 种算法？", a: "答：\n- 普里姆（Prim）算法：思想是从一个点出发，每次选离当前树最近的点。随机选取一顶点出发，选择与其相邻且权值最小的边加入到集合中，然后在选与此边相连的下个顶点出发，重复操作直到所有顶点被访问。\n- 克鲁斯卡尔（Kruskal）算法：思想是按照权值递增顺序依次从剩下未访问的边添加到集合中，如果加入之后构成回路则舍弃，直到回路中有 n-1 条边。把所有边按权值从小到大排序，用并查集判断是否连通，不连通就加入生成树。" },
+            { subject: "数据结构", q: "11.简述下什么是拓扑排序？", a: "答：\n它的思想是选择一个入度为 0 的顶点并输出，然后从网中删除此顶点以及所有出边，循环直到结束。" },
+            { subject: "数据结构", q: "12.简述下邻接矩阵与邻接表的区别？", a: "答：\n- 邻接矩阵：无向图的邻接矩阵是对称的，用二维数组来存。判断两个点之间有没有边非常快，时间是 O(1)，但空间复杂度是 O(V²)，适合边比较多的稠密图。\n- 邻接表：数组加链表的结构，只存实际存在的边，更省空间，复杂度是 O(V+E)，遍历边的时候效率更高，适合边比较少的稀疏图。缺点是在涉及度时可能需要遍历整个链表。大多数时候我们都用邻接表。" },
+            { subject: "数据结构", q: "13.数据结构有哪些排序算法？说一到两种排序算法的优劣？并比较时间复杂度？", a: "答：主要排序算法有：插入排序、冒泡排序、选择排序、快速排序、归并排序、堆排序。\n- 插入排序（稳定）：最好情况时间复杂度为 O(n)，平均及最坏情况为 O(n^2)。\n- 折半插入排序（稳定）：比较次数大大减少，时间复杂度为 O(n^2)，空间复杂度为 O(1)。\n- 冒泡排序（稳定）：每一趟将元素进行两两比较，“前小后大”交换。时间复杂度为 O(n^2)，空间复杂度为 O(1)。\n- 归并排序（稳定）：采用分治思想，将数组不断二分然后合并。时间复杂度为 O(nlogn)，空间复杂度与待排序元素个数相同。\n- 快速排序（不稳定）：任意选择一个基准元素，划分左右两个子序列再递归。优点是每一趟能确定一个元素位置，时间效率较高。时间复杂度为 O(nlogn)，空间复杂度为 O(logn)。\n- 希尔排序（不稳定）：先将序列分为若干个子序列进行直接插入排序。空间复杂度为 O(1)。\n- 简单选择排序（不稳定）：每次选取关键字最小的元素放到最前。时间效率低。\n- 堆排序（不稳定）：将序列排列成完全二叉树。优点是对大文件效率明显提高。" },
+            { subject: "数据结构", q: "14.什么是稳定的排序算法？", a: "答：\n稳定的排序算法就是序列中两个相同的数字在排序前和排序后位置顺序未改变。" },
+            { subject: "数据结构", q: "15.循环比递归效率高？", a: "答：\n大部分情况下可以相互转换，但有些问题递归更自然。不能完全决定性地说循环的效率比递归的效率高。\n① 递归：优点是代码简洁、清晰，并且容易验证正确性。缺点是效率较低，递归有时间和空间消耗，计算可能重复，从而带来负面影响。\n② 循环：优点是速度快，结构简单。缺点是并不能解决所有问题。如果使用循环不困难的话，最好使用循环。" },
+
+            // ================= 【计算机组成原理】 =================
+            { subject: "计算机组成原理", q: "1.计算机系统由哪两部分组成？计算机系统性能取决于什么？", a: "答：\n计算机系统是由硬件和软件组成的。\n衡量一个计算机系统的优劣是根据多个指标综合确定的，有包含硬件部分的功能，也有包含软件部分的。" },
+            { subject: "计算机组成原理", q: "2.计算机系统 5 层层次结构从下到上由哪五层组成？哪些是物理机，哪些是虚拟机？", a: "答：\n1）微程序机器、传统机器、操作系统机器、汇编语言机器、高级语言机器；\n2）微程序机器和传统机器是物理机，其他是虚拟机。" },
+            { subject: "计算机组成原理", q: "3.在计算机系统结构中，什么是翻译？什么是解释？", a: "答：\n- 翻译：就是把一种编程语言一下子全转换成另一种语言。\n- 解释：就是一句一句的解释和执行。\n总的来说就是一股脑和一下一下的区别。" },
+            { subject: "计算机组成原理", q: "4.冯诺依曼机器的主要特点？", a: "答：有五个特点：\n1.由运算器、控制器、存储器、输入输出五大部件构成；\n2.指令和数据都用二进制表示，存放在存储器里；\n3.以运算器为中心；\n4.指令由操作码和地址码组成；\n5.指令按顺序存放、顺序执行。" },
+            { subject: "计算机组成原理", q: "5.主存储器中，什么是 MAR，什么是 MDR，存储器的最大容量由什么决定？", a: "答：\n- MAR 是 address 地址寄存器；\n- MDR 是 data 数据寄存器；\n- 存储器的最大容量由地址寄存器和数据寄存器的位数来决定的。" },
+            { subject: "计算机组成原理", q: "6.什么是机器字长，什么是存储字长，什么是指令字长？", a: "答：\n- 机器字长：是 CPU 一次能处理的二进制数据的位数；\n- 存储字长：是一个存储单元中存放的二进制位数；\n- 指令字长：是一条指令所占用的二进制位数。" },
+            { subject: "计算机组成原理", q: "7.系统总线按照传输信息的不同，分成哪几类？是单向的，还是双向的？", a: "答：\n分为地址总线、数据总线和控制总线。\n其中，地址总线是单向的，由 CPU 发出；数据总线和控制总线是双向的。" },
+            { subject: "计算机组成原理", q: "8.存储器按存取方式，可以分成哪四类？哪些属于随机访问存储器，哪些属于串行访问存储器？", a: "答：\n1）可以分为随机存储器（RAM）、只读存储器(ROM)、顺序存储器(SAM)和直接存储器(DAM)；\n2）随机存储器和只读存储器属于随机访问存储器，即存取时间与物理地址无关；\n3）顺序存储器（典型如磁带）和直接存储器（典型如磁盘）属于串行存储器，存取时间与物理地址有关。" },
+            { subject: "计算机组成原理", q: "9.衡量存储器使用哪三个指标？寄存器、缓存（cache）、主存中，哪个速度最快？哪个最便宜？", a: "答：\n分别是容量、速度和价格。\n其中寄存器速度最快，主存最便宜。" },
+            { subject: "计算机组成原理", q: "10.常见的存储系统层次结构有哪两种？透明性如何？各自用来解决什么问题的？", a: "答：\n① 主存和辅存的层次结构：主要是用来解决主存容量不足的问题（辅存增加容量），对应用程序设计者透明，对系统程序设计者不透明。\n② 主存和 cache 的层次结构：主要是用来解决主存和 CPU 速度不匹配的问题（主存的速度太慢），对所有程序员透明。" },
+            { subject: "计算机组成原理", q: "11.字在存储单元中有两种存储方式，大端方式和小端方式。各是什么含义？x86 采用的是哪种存储方式？", a: "答：\n1）大端方式：字的低位存在内存的高地址中，而字的高位存在内存的低地址中；\n2）小端方式：字的低位存在内存的低地址中，而字的高位存在内存的高地址中。\n3）x86 CPU 采用的是小端方式。" },
+            { subject: "计算机组成原理", q: "12.什么是存取时间？什么是存取周期？哪个大？", a: "答：\n存取时间是启动一次存储器从开始到结束的过程。\n存取周期是两次启动存储器的时间间隔，其中存取周期包含存取时间。\n存取周期大。" },
+            { subject: "计算机组成原理", q: "13.随机存储器包含哪两大类？哪个需要刷新？请从速度、容量、价格等方面进行简要比较", a: "答：\n1）静态 SRAM：采用锁存器原理实现；\n2）动态 DRAM：采用电容原理实现，需要刷新。\n3）相比于动态 RAM，静态 RAM 的速度快、容量小、价格高，一般用于缓存，而动态 RAM 一般用于内存。（静态 RAM 价值更高）。" },
+            { subject: "计算机组成原理", q: "14.提高访存速度的三种方式。", a: "答：\n一是使用速度更快的存储芯片；\n二是引入 cache - 主存层次，用缓存减少对主存的访问；\n三是采用多体并行、单体多字这类主存结构，提升存储器带宽。" },
+            { subject: "计算机组成原理", q: "15.什么是中断？", a: "答：\n总的来说，就是系统在运行过程中，遇到了异常。系统就开始采取中断措施。停止当前的运行，并保存对应的现场，随后去处理该异常，之后恢复现场，继续执行。\n计算机在执行当前程序的过程中，由于系统内部或外部发生了某种急需处理的事件，CPU暂停当前程序的执行，保存当前的上下文状态，转而执行其他事件，处理完后 CPU 再继续执行这个程序。" },
+            { subject: "计算机组成原理", q: "16.中断服务程序的基本流程包括哪四部分？", a: "答：\n1.保护现场\n2.中断服务\n3.恢复现场\n4.中断返回" },
+            { subject: "计算机组成原理", q: "17.CPU 响应中断的时机？", a: "答：\n当前指令结束之后。" },
+            { subject: "计算机组成原理", q: "18.操作码长度有固定长度和可变长度两种，各自有什么优点？", a: "答：\n1）固定长度：便于硬件设计，指令译码时间短；\n2）可变长度：压缩了操作码平均长度。" },
+            { subject: "计算机组成原理", q: "19.什么是 DMA？", a: "答：\n直接内存访问（DMA）。\n它是一种完全由硬件执行的 I/O 数据交换机制。外部设备可以直接与系统主存进行数据交换，过程中基本不需要 CPU 的介入，在主存和 I/O 设备之间建立独立的总线连接。" },
+            { subject: "计算机组成原理", q: "20.什么是形式地址？什么是有效地址？", a: "答：\n1）形式地址：指令的地址码字段通常都不代表操作数的真实地址，称为形式地址，记为 A。它是指令里直接存储的地址，只是一个偏移量、常数或者基准数。\n2）有效地址：操作数的真实地址，记为 EA，由寻址特征和形式地址共同决定。是形式地址经计算完之后的真实访存地址。" },
+            { subject: "计算机组成原理", q: "21.数据在存储器中存储时，为什么要按照边界对齐？", a: "答：\n为了减少访存次数。如果没对齐就会多访问一些。" },
+            { subject: "计算机组成原理", q: "22.当使用寄存器代替指令字中的地址码字段后，有哪些优点？", a: "答：\n1.减少访存次数：极大地缩短了指令字长，因为寄存器编号是很小的；如果是“寄存器寻址”，大大减少了访存次数，提高了执行速度。\n2.提高寻址范围：如果是“寄存器间接寻址”，扩大了寻址范围，因为寄存器存放的是真实主存物理地址。" },
+
+            // ================= 【操作系统】 =================
+            { subject: "操作系统", q: "1.什么是进程？什么是线程？两者有什么区别？（详解）", a: "答：\n① 进程：是系统中正在运行的一个程序，程序一旦运行就是进程。进程是资源分配的基本单位，是程序的一次执行过程。\n② 线程：是进程的一个实体，是进程的一条执行路径，是进程的一部分。\n③ 区别：进程是为了更好地使多道程序并发执行，以提高资源利用率和系统吞吐量。线程是为了减少程序在并发执行时所付出的时空开销，提高操作系统的并发性能。" },
+            { subject: "操作系统", q: "2.什么是死锁？死锁产生的条件是什么？（详解）", a: "答：\n① 死锁是指两个或者两个以上的进程因为竞争资源而造成的一种阻塞现象。\n② 产生条件有四个：互斥条件（资源同一时间只能被一个进程使用）、请求和保持条件（进程申请别的资源时不释放已有资源）、不可剥夺条件（别人不能强行抢走进程手里的资源）、循环等待条件（进程之间形成相互等待）。破坏其中一个就可避免死锁。" },
+            { subject: "操作系统", q: "3.如何避免死锁？", a: "答：\n死锁不能完全避免，处理策略分为以下几点：\n① 预防死锁：设置限制条件破坏产生死锁的必要条件；\n② 避免死锁：在资源分配过程中，分配前先进行安全性检查（如迪杰斯特拉的银行家算法）；\n③ 检测死锁：允许死锁发生，操作系统定期检测，一旦发现就采取杀死进程或剥夺资源等措施；\n④ 解除死锁：与检测死锁配合使用。" },
+            { subject: "操作系统", q: "4.进程常见的状态是什么？以及各种状态之间的转换？", a: "答：\n① 常见状态：就绪（已具备运行条件但 CPU 还没分配过来）、运行（占用 CPU 并运行）、阻塞（因等待某件事发生而暂时不能运行）。\n② 状态转换：就绪可以进入运行，运行可以进入就绪和阻塞，阻塞可以进入就绪。注意：阻塞不能直接进入运行状态！" },
+            { subject: "操作系统", q: "5.操作系统的四大特性是什么？（详解）", a: "答：\n① 并发：指两个或多个事件在同一时间间隔内发生；\n② 共享：系统中的资源可供内存中多个并发执行的进程共同使用；\n③ 虚拟：通过技术将一个物理实体变为若干个逻辑上的对应物的功能（空分复用+时分复用）；\n④ 异步：由于资源限制，进程执行通常不可能“一气呵成”，而是以“停停走走”的方式运行。" },
+            { subject: "操作系统", q: "6.操作系统的主要功能是什么？", a: "答：\n① 处理机管理（进程控制、进程同步、进程通信、调度）；\n② 存储器管理（内存分配、内存保护、地址映射、虚拟存储扩充）；\n③ 设备管理（缓冲管理、设备分配、设备处理）；\n④ 文件管理（文件存储空间管理、目录管理、文件读写保护）。" },
+            { subject: "操作系统", q: "7.解释下操作系统中同步与异步？（详解）", a: "答：\n① 同步：指一个进程在执行某个请求时，若该请求需要一段时间才能返回信息，这个进程就会一直等待直到收到返回信息才继续执行。（一起来一起走，关注其他进程的状态）。\n② 异步：进程执行请求时不需要一直等下去，而是继续执行下面的操作，不管其他进程的状态。当有消息返回时系统会通知进程处理。" },
+            { subject: "操作系统", q: "8.请说明下计算机硬件系统是由哪几部分组成？", a: "答：\n运算器、控制器、存储器、输入设备和输出设备。\n其中运算器和控制器统称中央处理器（CPU）。" },
+            { subject: "操作系统", q: "9.解释下什么是抢占式调度与非抢占式调度？", a: "答：\n① 非抢占式调度：系统一旦把处理机分配给就绪队列中优先权最高的进程后，该进程便一直执行下去直至完成，不能被抢占。\n② 抢占式调度：在其执行期间，只要出现了另一个优先权更高的进程，调度程序就立即停止当前进程的执行，将处理机分配给新到的优先权最高的进程，可以被高优先级抢占。" },
+            { subject: "操作系统", q: "10.解释下分段与分页的区别？", a: "答：\n① 页是信息的物理单位，分页是为了实现离散分配方式，以减少内存的外部碎片，提高内存利用率；段是信息的逻辑单位，分段是为了更好满足用户的需要。\n② 页的大小固定，分为页号+页内地址；段的长度可变，取决于用户编写的程序。\n③ 分页的作业地址是一维的，分段的作业地址是二维的。" },
+            { subject: "操作系统", q: "11.Cache（高速缓冲存储器）的作用是什么？", a: "答：\nCache 位于 CPU 和主存之间，解决 CPU 与主存之间速度不匹配的问题（因为主存太慢，Cache快得多）。" },
+            { subject: "操作系统", q: "12.页面置换算法有哪些？（详解）", a: "答：\n最佳页面置换算法、最近最久未使用算法（LRU）、时钟置换算法。" },
+
+            // ================= 【编程语言 - C/C++】 =================
+            { subject: "C/C++", q: "1.C 语言中 static 关键字的作用是什么？", a: "答：\n① 在函数体中，一个被声明为静态的变量在函数被调用过程中维持其值不变；\n② 修饰全局变量时，这个全局变量只能在本文件中访问，不能在其他文件中访问；\n③ 修饰一个函数时，这个函数只能在本文件中访问。（变量和函数都一样，作用域限制在本文件）。" },
+            { subject: "C/C++", q: "2.C 语言中 const 关键字的作用是什么？（详解）", a: "答：\nconst 的功能是对变量声明为只读特性，并保护变量值以防被修改。" },
+            { subject: "C/C++", q: "3.引用和指针有什么区别？（详解）", a: "答：\n① 本质上：引用是别名，指针是内存地址，指针变量是用来存放内存地址的变量；\n② 引用必须初始化，指针不需要；\n③ 引用初始化之后不能改变，指针可以改变所指对象。" },
+            { subject: "C/C++", q: "4.引用与值传递的区别是什么？", a: "答：\n① 值传递：传递的是一个值的副本，函数对形参的操作不会影响实参的值；\n② 引用传递：传递的是引用对象的内存地址，函数对形参的操作会影响实参的值。" },
+            { subject: "C/C++", q: "5.指针和变量的自增自减有什么区别？", a: "答：\n指针的自增自减改变的是指针的指向地址；\n变量的自增自减改变的是变量的值。" },
+            { subject: "C/C++", q: "6.面向对象和面向过程的区别是什么？（详解）", a: "答：\n① 面向对象：将功能封装到对象里，强调的是具有某功能的对象；\n② 面向过程：强调的是功能行为，是一种过程，先干什么，再干什么。" },
+            { subject: "C/C++", q: "7.指针数组与数组指针的区别是什么？（详解）", a: "答：\n① 指针数组：array of pointers，即用于存储指针的数组，数组元素是指针；\n② 数组指针：a pointer to an array，即指向数组的指针。" },
+            { subject: "C/C++", q: "8.&和*的区别", a: "答：\n① “&”是取地址运算符，&a 是变量 a 的地址；\n② “*”是指针运算符（间接访问运算符），*p 代表指针变量 p 指向的对象。" },
+
+            // ================= 【编程语言 - JAVA】 =================
+            { subject: "JAVA", q: "1.JAVA 的三大特性是什么？（详解）", a: "答：\n封装、继承、多态。" },
+            { subject: "JAVA", q: "2.什么是封装？封装的目的是什么？", a: "答：\n① 封装：实际上就是把一个对象的属性和方法归到一个类中，以方便使用；\n② 目的：增加安全性以及简化编程，使用者无需知道具体实现细节，通过外部接口访问即可。" },
+            { subject: "JAVA", q: "3.什么是继承？继承的目的是什么？", a: "答：\n① 继承：在原有类的基础上增加新的属性和方法，构造一个新类。子类可以继承父类的属性和方法并进行扩展或重写；\n② 目的：代码复用，提高代码的扩展性和可维护性。" },
+            { subject: "JAVA", q: "4.什么是多态？多态的目的是什么？", a: "答：\n① 多态：指一种方法有多种实现版本（一种定义，多种实现）。父类引用指向子类对象，同一个方法调用根据对象不同表现出不同行为；\n② 目的：增加代码灵活度，提高可扩展性。" },
+            { subject: "JAVA", q: "5.什么是重载？什么是重写？（详解）", a: "答：\n① 重载：指函数或者方法名相同，但参数列表不同；\n② 重写：在继承过程中，子类定义了与父类中名称相同、参数相同、返回值相同的方法。" },
+            { subject: "JAVA", q: "6.JAVA 中的基本类型有哪些？（详解）", a: "答：\n① 整数类型：byte(1字节)、short(2字节)、int(4字节)、long(8字节)；\n② 浮点类型：float(4字节)、double(8字节)；\n③ 字符型：char(2字节)；\n④ 布尔类型：boolean(1字节)。" },
+            { subject: "JAVA", q: "7.JAVA 中接口是什么？（详解）", a: "答：\n接口是一系列方法的声明，是一种特殊的抽象类型，它只包含方法的声明不包含具体实现，是对行为的抽象和规范。" },
+            { subject: "JAVA", q: "8.JAVA 中反射是什么？（详解）", a: "答：\nJAVA 反射机制是在运行状态中，对于任意一个实体类，都能够知道这个类的所有属性和方法。" },
+            { subject: "JAVA", q: "9.JAVA 中异常是什么？", a: "答：\n异常就是程序运行过程中出现的不正常、意外情况。\n分为 Error 错误和 Exception 异常，Error 会直接终止程序，Exception 可控用 try 处理。" },
+            { subject: "JAVA", q: "10.JRE、JDK、JVM 是什么？", a: "答：\n① JRE（Java Runtime Environment）：JAVA 运行环境；\n② JDK（Java Development Kit）：JAVA 开发工具；\n③ JVM（Java Virtual Machine）：JAVA 虚拟机，是运行所有 Java 程序的抽象计算机。" },
+            { subject: "JAVA", q: "11.说明下 JAVA 怎么处理对象分配和释放的？", a: "答：\n① 分配：程序员通过 new 为每个对象申请内存空间（基本类型除外），所有对象都在堆中分配空间；\n② 释放：对象的释放是由垃圾回收机制决定和执行的。" },
+            { subject: "JAVA", q: "12.说明下 JAVA 有什么特点？（详解）", a: "答：\nJAVA 是一种纯粹的面向对象语言，继承了 C++ 核心，但抛弃了容易引起错误的指针和多继承等缺点。\n同时增加了垃圾回收机制，自动释放内存，解决了管理内存的烦恼。" },
+
+            // ================= 【计算机网络】 =================
+            { subject: "计算机网络", q: "1.说下 OSI 体系结构和 TCP/IP 体系结构", a: "答：\nOSI（开放式系统互联）分为七层：\n1.物理层（透明地传输比特流）\n2.数据链路层（将网络层传下来的分组封装成帧）\n3.网络层（为主机提供数据传输服务）\n4.传输层（为主机中的进程提供端到端数据传输服务）\n5.会话层（建立及管理会话）\n6.表示层（负责数据格式转换、加密压缩）\n7.应用层（为特定应用程序提供服务）\n\nTCP/IP 体系结构分为四层：\n网络接口层、网际层（IP 协议）、传输层（TCP/UDP）、应用层。" },
+            { subject: "计算机网络", q: "2.解释下 ARP 协议", a: "答：\nARP 协议是地址解析协议，根据 IP 地址获取 MAC 地址（物理地址）。\n主机发送数据时先查看 ARP 缓存表，没有则在网络发送广播，目标主机收到后将包含自己 MAC 地址的 ARP 包返回给源主机。" },
+            { subject: "计算机网络", q: "3.解释下 DHCP 协议？", a: "答：\nDHCP（动态主机配置协议），主要是为新加入到网络中的计算机自动配置 IP 地址，实现即插即用，不需要人工配置。" },
+            { subject: "计算机网络", q: "4.解释下 TCP 三次握手？如果两次握手会干嘛？三次握手的目的是什么？", a: "答：\n三次握手是 TCP 发送数据前建立连接的过程：客户端发送请求报文，服务端回复确认报文，客户端再对服务端的确认进行确认。\n如果是两次握手：当客户端第一次发的请求因堵塞延迟到达服务端时，服务端同意连接并一直等待客户端发数据，而此时客户端早已取消连接，会导致服务端长时间浪费资源。\n目的是：同步连接双方的序列号和确认号，并交换 TCP 窗口大小信息。" },
+            { subject: "计算机网络", q: "5.解释 TCP 的四次挥手？四次挥手的目的是什么？", a: "答：\n四次挥手过程：主机 A 发送连接释放报文，主机 B 收到后发出确认；随后主机 B 发送连接释放报文，主机 A 收到后发出确认。\n目的是：终止 TCP 连接。" },
+            { subject: "计算机网络", q: "6.解释下 TCP/UDP 的区别？", a: "答：\n- TCP 面向连接，提供可靠的数据传输服务，面向字节流、传输慢；\n- UDP 面向非连接，不提供可靠传输，面向报文、传输快。" },
+            { subject: "计算机网络", q: "7.谈谈 HTTP 和 HTTPS 的区别？", a: "答：\n- HTTP 是超文本传输协议，明文传输，不安全，端口 80；\n- HTTPS 是具有安全性的 SSL 加密传输协议，更安全，端口 443，需要数字证书认证。" },
+            { subject: "计算机网络", q: "8.谈谈 GET 和 POST 之间的区别？", a: "答：\n- GET 一般用来从服务器获取资源，参数附在 URL 中，对用户可见，数据大小受限；\n- POST 一般用来向服务器发送或更新数据，参数包装在请求体中，相对安全隐私，理论上无大小限制。" },
+            { subject: "计算机网络", q: "9.解释下 CSMA/CD 是什么？", a: "答：\n载波监听多路访问/冲突检测方法。\n思想是：先听后发，边听边发，冲突停发，随机重发。" },
+            { subject: "计算机网络", q: "10.IPv4 与 IPv6 的区别？", a: "答：\nIPv6 比 IPv4 更安全，存储空间更大。\nIPv4 是 32 位点分十进制表示，数量有限；\nIPv6 是 128 位冒号十六进制表示，几乎用不完。" },
+            { subject: "计算机网络", q: "11.怎么理解子网掩码和 IP 地址？", a: "答：\n- IP 地址是网络中主机的唯一标识；\n- 子网掩码必须和 IP 地址配合使用，用于把 IP 地址划分成网络地址和主机地址两部分，以判断两台主机是否在同一局域网网段。" },
+            { subject: "计算机网络", q: "12.HUB, Switch, Router 分别属于 OSI 哪一层?", a: "答：\n- HUB（集线器）属于物理层；\n- Switch（交换机）属于数据链路层；\n- Router（路由器）属于网络层。" },
+            { subject: "计算机网络", q: "13.说一下交换机与路由器的区别？", a: "答：\n- 交换机主要工作在数据链路层，根据 MAC 地址寻址；\n- 路由器工作在网络层，根据 IP 地址寻址。" },
+            { subject: "计算机网络", q: "14.解释下 TCP/IP 协议？", a: "答：\nTCP/IP 协议是因特网的通信协议，由 IP 协议和 TCP 协议组成，定义了全世界计算机之间通信、传输数据的规则。" },
+            { subject: "计算机网络", q: "15.解释下 SMTP 协议？", a: "答：\n简单邮件传输协议，作用是帮助每台计算机发送邮件时找到下一个目的地。" },
+            { subject: "计算机网络", q: "16.解释下 ICMP 协议？", a: "答：\n网际控制报文协议，用于 IP 主机和路由器之间传递控制消息（如网络不通、路由不可达）。\n功能包括确认 IP 包是否到达、通知 IP 包被丢弃的原因。" },
+            { subject: "计算机网络", q: "17.电路交换、报文交换、分组交换分别的优缺点？", a: "答：\n① 电路交换：优点是传输时延小、无冲突、实时性强；缺点是独占式信道利用率低、建立连接时间长。\n② 报文交换：优点是无需建立连接、信道利用率高；缺点是转发时延长、要求的缓存空间大。\n③ 分组交换：优点是信道利用率高、加速传输；缺点是存在发送时延，分组可能会失序、丢失、重复。" },
+
+            // ================= 【数据库】 =================
+            { subject: "数据库", q: "1.DBMS 是什么？DBMS 的功能有些什么？", a: "答：\nDBMS 是数据库管理系统，是一种操纵和管理数据库的大型软件。\n功能包括：\n1.数据定义功能（DDL）\n2.数据操纵功能（DML）\n3.数据查询功能（DQL）\n4.数据控制功能（DCL）" },
+            { subject: "数据库", q: "2.什么是主键、外键？", a: "答：\n- 主键：能确定一条记录的唯一标识，不能重复且不能为空。\n- 外键：用于与另一张表的关联，保持数据的一致性。" },
+            { subject: "数据库", q: "3.索引是什么？它的优缺点是什么？索引越多越好？索引的类型有哪些？", a: "答：\n索引是帮助数据库高效获取数据的数据结构。\n- 优点：大大加快数据检索速度。\n- 缺点：占用物理空间，数据修改时需动态维护，降低维护速度。\n索引不是越多越好，建太多会严重拖慢增删改的速度。\n- 类型有：聚集索引、非聚集索引、主键/唯一/普通/全文/视图索引。" },
+            { subject: "数据库", q: "4.什么是事务？事务的四大特性？", a: "答：\n事务是用户定义的一个数据库操作序列，不可分割，要么全做要么全不做。\n四大特性（ACID）：原子性、一致性、隔离性、持久性。" },
+            { subject: "数据库", q: "5.什么是视图？", a: "答：\n视图是一张虚拟的表，是一组数据的逻辑表示，本质对应于一条 SELECT 语句。" },
+            { subject: "数据库", q: "6.什么是范式？请说说数据库的三大范式？", a: "答：\n范式是设计数据库结构要遵循的规则。\n- 第一范式（1NF）：表中的列不可再细分；\n- 第二范式（2NF）：在 1NF 基础上，消除非主属性对主键的部分函数依赖（一个表只描述一件事）；\n- 第三范式（3NF）：在 2NF 基础上，消除传递依赖（每一列只能依赖于主键）。" },
+            { subject: "数据库", q: "7.什么是等值连接（inner join）、左连接（left join）、右连接（right join）", a: "答：\n- 等值连接：只返回两个表中连接字段相等的行；\n- 左连接：返回左表所有记录以及右表中相等的记录；\n- 右连接：返回右表所有记录以及左表中相等的记录。" },
+            { subject: "数据库", q: "8.E-R 图是什么？", a: "答：\n实体联系图（E-R 图），用来进行关系型数据库的概念设计。\n由实体（矩形）、属性（椭圆）、联系（菱形）三个部分组成。" },
+            { subject: "数据库", q: "9.请问 SQL 优化方法有哪些？", a: "答：\n① 通过建立索引对查询进行优化；\n② 尽量避免全表扫描。" },
+            { subject: "数据库", q: "10.数据库的三级模式结构是什么？", a: "答：\n1.外模式（用户模式）\n2.模式（逻辑模式）\n3.内模式（物理模式）" },
+            { subject: "数据库", q: "11.数据库系统的二级映像是什么？", a: "答：\n1.外模式/模式映像（保证逻辑数据独立性）\n2.模式/内模式映像（保证物理数据独立性）" },
+            { subject: "数据库", q: "12.说下几种常见的数据模型？数据模型的组成要素是什么？（详解）", a: "答：\n① 常见模型：关系模型、层次模型、网状模型、面向对象模型；\n② 组成要素：数据结构、数据操作、数据的完整性约束。" },
+            { subject: "数据库", q: "13.什么是数据库的约束？有几种？", a: "答：\n约束是防止非法记录的规则，保证数据完整性、正确性。\n种类有：主键约束、外键约束、唯一约束、非空约束、检查约束、默认约束。" },
+            { subject: "数据库", q: "14.常见的数据库有哪些？", a: "答：\n- 关系型：MySQL、Oracle、SQL Server 等；\n- 非关系型：Redis、MongoDB、Elasticsearch 等。" },
+
+            // ================= 【前沿知识 - 人工智能与大数据】 =================
+            { subject: "人工智能与大数据", q: "1.人工智能是什么？", a: "答：\n人工智能（AI）是研究用于模拟、延伸和扩展人的智能的一门技术科学，是计算机科学的分支，是一门综合学科。" },
+            { subject: "人工智能与大数据", q: "2.人工智能应用在什么地方？", a: "答：\n常见应用于指纹/人脸识别、专家系统、智能搜索、聊天机器人等。\n领域划分为：机器人领域、语言识别领域、图像识别领域、专家系统。" },
+            { subject: "人工智能与大数据", q: "3.人工智能具体有哪三种形态呢？", a: "答：\n① 弱人工智能：擅长单个方面（如只会下象棋）；\n② 强人工智能：各方面都能和人类比肩；\n③ 超人工智能：在几乎所有领域都比人类最聪明的大脑聪明得多。" },
+            { subject: "人工智能与大数据", q: "4.人工智能的四大技术分支是什么？", a: "答：\n① 模式识别\n② 机器学习\n③ 数据挖掘\n④ 智能算法" },
+            { subject: "人工智能与大数据", q: "5.大数据和人工智能的关系是什么？", a: "答：\n相辅相成、相互融合。\n大数据是人工智能的基础（提供数据和计算能力支撑），人工智能则强调深度学习。" },
+
+            // ================= 【软件工程】 =================
+            { subject: "软件工程", q: "1.软件开发过程一般有几个阶段？", a: "答：\n一般分为五个阶段：\n1. 问题的定义及规划：需求方共同讨论，确定开发目标及可行性；\n2. 需求分析：详细分析各功能需求，定制变更计划；\n3. 软件设计：包含系统框架、数据库、总体与详细设计；\n4. 程序编码：转化为可运行代码，制定统一编写规范；\n5. 软件测试：分为单元测试、组装测试、系统测试（包含白盒与黑盒测试）。" }
+        ];
+
+        // 状态变量
+        let shuffledIndices =[];
+        let currentIndex = 0;
+        let timerInterval = null; 
+        let secondsElapsed = 0;   
+
+        // 初始化页面
+        window.onload = function() {
+            renderAllQuestions();
+        }
+
+        // 打乱数组 (Fisher-Yates 算法)
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
+            }
+            return array;
+        }
+
+        // 格式化时间为 mm:ss
+        function formatTime(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            const s = (totalSeconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        // 启动/重置计时器
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            secondsElapsed = 0;
+            document.getElementById('timer-text').textContent = `⏱ 00:00`;
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                document.getElementById('timer-text').textContent = `⏱ ${formatTime(secondsElapsed)}`;
+            }, 1000);
+        }
+
+        // 点击“开始练习”
+        function startPractice() {
+            let indices = Array.from({length: qaData.length}, (_, i) => i);
+            shuffledIndices = shuffleArray(indices);
+            currentIndex = 0;
+
+            document.getElementById('all-mode').classList.add('hidden');
+            document.getElementById('practice-mode').classList.remove('hidden');
+            
+            renderCurrentQuestion();
+        }
+
+        // 渲染当前处于练习中的题目
+        function renderCurrentQuestion() {
+            const actualIndex = shuffledIndices[currentIndex];
+            const currentQA = qaData[actualIndex];
+
+            // 更新进度文字
+            document.getElementById('progress-text').textContent = `${currentIndex + 1} / ${qaData.length}`;
+            
+            // 重置并启动该题的计时器
+            startTimer();
+
+            // 更新标签、题目和答案内容
+            document.getElementById('practice-subject-tag').textContent = `🏷️ 【${currentQA.subject}】`;
+            document.getElementById('practice-q-text').textContent = currentQA.q;
+            document.getElementById('practice-a-text').textContent = currentQA.a;
+
+            // 隐藏答案，显示“查看答案”按钮
+            document.getElementById('practice-a-text').classList.add('hidden');
+            document.getElementById('show-ans-btn').classList.remove('hidden');
+
+            // 按钮状态：第一题禁用“上一题”，最后一题禁用“下一题”
+            document.getElementById('btn-prev').disabled = (currentIndex === 0);
+            document.getElementById('btn-next').disabled = (currentIndex === qaData.length - 1);
+        }
+
+        // 上一题
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderCurrentQuestion();
+            }
+        }
+
+        // 下一题
+        function nextQuestion() {
+            if (currentIndex < qaData.length - 1) {
+                currentIndex++;
+                renderCurrentQuestion();
+            }
+        }
+
+        // 查看答案 
+        function showAnswer() {
+            document.getElementById('practice-a-text').classList.remove('hidden');
+            document.getElementById('show-ans-btn').classList.add('hidden');
+        }
+
+        // 查看全部
+        function showAll() {
+            if (timerInterval) clearInterval(timerInterval);
+            document.getElementById('practice-mode').classList.add('hidden');
+            document.getElementById('all-mode').classList.remove('hidden');
+        }
+
+        // 生成全部列表的 DOM 结构
+        function renderAllQuestions() {
+            const allModeContainer = document.getElementById('all-mode');
+            let htmlContent = '';
+
+            qaData.forEach((item, index) => {
+                htmlContent += `
+                    <div class="list-item">
+                        <div class="list-item-title">
+                            <span style="color:var(--text-main); font-size:16px;">${index + 1}.</span>
+                            <span class="subject-tag" style="margin-bottom:0; font-size:12px;">【${item.subject}】</span>
+                        </div>
+                        <div class="question-text" style="margin-top:10px;">${item.q}</div>
+                        <div class="answer-text" style="display:block; animation:none;">${item.a}</div>
+                    </div>
+                `;
+            });
+
+            allModeContainer.innerHTML = htmlContent;
+        }
+    </script>
+</body>
+</html>
